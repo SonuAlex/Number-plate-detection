@@ -53,6 +53,26 @@ while True:
         cx = int(x1 + x2) // 2
         cy = int(y1 + y2) // 2
 
+        result = cv2.pointPolygonTest(np.array(area, np.int32), ((cx, cy)), False)
+        if result >= 0:
+            crop = frame[y1:y2, x1:x2]
+            gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
+            gray = cv2.bilateralFilter(gray, 10, 20, 20)
+
+            text = pytesseract.image_to_string(gray).strip()
+            text = text.replace('(', '').replace(')', '').replace(',', '').replace(']', '').replace('[', '')
+            print(text)
+    #         if text not in processed_numbers:
+    #             processed_numbers.add(text)
+    #             list1.append(text)
+    #             current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    #             with open('car_plate_data.txt', 'a') as file:
+    #                 file.write(f'{text}\t{current_datetime}\n')
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            cv2.imshow('crop', crop)
+    
+    cv2.polylines(frame, [np.array(area, np.int32)], True, (255, 0, 0), 2)
     cv2.imshow('RGB', frame)
     if cv2.waitKey(0) & 0xFF == 27:
         break
