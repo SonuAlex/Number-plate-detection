@@ -26,7 +26,7 @@ count = 0
 list1 = []
 processed_numbers = set()
 
-with open('car_plate_data.txt', 'a') as file:
+with open('car_plate_data.txt', 'w') as file:
     file.write('NumberPlate\tDate\tTime\n')
 
 while True:
@@ -60,21 +60,20 @@ while True:
             gray = cv2.bilateralFilter(gray, 10, 20, 20)
 
             text = pytesseract.image_to_string(gray).strip()
-            text = text.replace('(', '').replace(')', '').replace(',', '').replace(']', '').replace('[', '')
+            text = text.replace('(', '').replace(')', '').replace(',', '').replace(']', '').replace('[', '').replace('"', "").replace("'", '').replace('“', '').replace('”', '').replace(' ', '')
             print(text)
-    #         if text not in processed_numbers:
-    #             processed_numbers.add(text)
-    #             list1.append(text)
-    #             current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            if text not in processed_numbers:
+                processed_numbers.add(text)
+                current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-    #             with open('car_plate_data.txt', 'a') as file:
-    #                 file.write(f'{text}\t{current_datetime}\n')
+                with open('car_plate_data.txt', 'a') as file:
+                    file.write(f'{text}\t{current_datetime}\n')
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
             cv2.imshow('crop', crop)
     
     cv2.polylines(frame, [np.array(area, np.int32)], True, (255, 0, 0), 2)
     cv2.imshow('RGB', frame)
-    if cv2.waitKey(0) & 0xFF == 27:
+    if cv2.waitKey(1) & 0xFF == 27:
         break
 
 cap.release()
